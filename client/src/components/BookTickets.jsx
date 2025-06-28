@@ -195,7 +195,7 @@ const BookTickets = ({ events, setEvents }) => {
                     <div>
                       <p className="text-gray-600">Price:</p>
                       <p className="text-blue-600 font-semibold">
-                        ${event.price}
+                        ₹{event.price}
                       </p>
                     </div>
                     <div>
@@ -303,7 +303,7 @@ const BookTickets = ({ events, setEvents }) => {
                         Tickets ({ticketCount}x)
                       </span>
                       <span>
-                        ${calculateTotal(event, ticketCount).toFixed(2)}
+                        ₹{calculateTotal(event, ticketCount)}
                       </span>
                     </div>
                     <div className="flex justify-between text-sm text-gray-500">
@@ -314,7 +314,7 @@ const BookTickets = ({ events, setEvents }) => {
                       <div className="flex justify-between font-semibold text-lg">
                         <span>Total Amount</span>
                         <span className="text-blue-600">
-                          ${calculateTotal(event, ticketCount).toFixed(2)}
+                          ₹{calculateTotal(event, ticketCount)}
                         </span>
                       </div>
                     </div>

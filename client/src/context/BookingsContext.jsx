@@ -72,6 +72,19 @@ export const BookingsProvider = ({ children }) => {
 
   const updateTicketCount = async (eventId, ticketsBooked) => {
     try {
+      // Update backend first
+      const response = await fetch(`http://localhost:5000/api/events/update-tickets/${eventId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ quantity: ticketsBooked }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update ticket count on server');
+      }
+
       // Update events in localStorage
       const events = JSON.parse(localStorage.getItem('events')) || [];
       const updatedEvents = events.map(event => {

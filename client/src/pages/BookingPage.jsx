@@ -76,7 +76,7 @@ const BookingPage = ({ events }) => {
                 {/* Price Badge */}
                 <div className="absolute top-6 left-6">
                   <span className="bg-white/90 backdrop-blur-sm text-gray-900 px-4 py-2 rounded-full text-lg font-bold shadow-lg">
-                    ${event.price}
+                    ₹{event.price}
                   </span>
                 </div>
                 

@@ -50,7 +50,7 @@ const EvtCard = ({ event }) => {
         {/* Price Badge */}
         <div className="absolute top-4 left-4">
           <span className="bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-sm font-bold">
-            ${event.price}
+            ₹{event.price}
           </span>
         </div>
         
@@ -67,7 +67,7 @@ const EvtCard = ({ event }) => {
             {formatDate(event.formatted_date || event.date).split(' ')[0]}
           </div>
           <div className="text-lg font-bold text-gray-900">
-            {formatDate(event.formatted_date || event.date).split(' ')[1]}
+            {formatDate(event.formatted_date || event.date).split(' ')[1].replace(',', '')}
           </div>
         </div>
       </div>

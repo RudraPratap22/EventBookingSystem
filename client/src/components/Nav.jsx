@@ -58,7 +58,11 @@ const Nav = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-8">
-          <Link to="/" className={`hover:text-blue-600 transition-colors font-medium ${navTextColor}`}>
+          <Link
+            to="/"
+            className={`hover:text-blue-600 transition-colors font-medium ${navTextColor}`}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
             Home
           </Link>
           <a href="#events" className={`hover:text-blue-600 transition-colors font-medium ${navTextColor}`}>
@@ -67,7 +71,10 @@ const Nav = () => {
           <a href="#categories" className={`hover:text-blue-600 transition-colors font-medium ${navTextColor}`}>
             Categories
           </a>
-          <a href="#contact" className={`hover:text-blue-600 transition-colors font-medium ${navTextColor}`}>
+          <a
+            href="#footer"
+            className={`hover:text-blue-600 transition-colors font-medium ${navTextColor}`}
+          >
             Contact
           </a>
         </div>
@@ -144,10 +151,21 @@ const Nav = () => {
       {mobileMenuOpen && (
         <div className="md:hidden mt-4 bg-white rounded-lg shadow-lg border border-gray-200 p-4">
           <div className="space-y-3">
-            <Link to="/" className="block py-2 text-gray-800 hover:text-blue-600 font-medium">Home</Link>
+            <Link
+              to="/"
+              className={`block py-2 text-gray-800 hover:text-blue-600 font-medium`}
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            >
+              Home
+            </Link>
             <a href="#events" className="block py-2 text-gray-800 hover:text-blue-600 font-medium">Events</a>
             <a href="#categories" className="block py-2 text-gray-800 hover:text-blue-600 font-medium">Categories</a>
-            <a href="#contact" className="block py-2 text-gray-800 hover:text-blue-600 font-medium">Contact</a>
+            <a
+              href="#footer"
+              className={`block py-2 text-gray-800 hover:text-blue-600 font-medium`}
+            >
+              Contact
+            </a>
           </div>
         </div>
       )}

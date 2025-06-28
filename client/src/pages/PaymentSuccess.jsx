@@ -1,6 +1,11 @@
 import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
 
+const USD_TO_INR = 83;
+function toINR(usd) {
+  return Math.round(usd * USD_TO_INR);
+}
+
 const PaymentSuccess = () => {
   const location = useLocation();
   const { event, ticketCount, total, paymentId, isPending } = location.state || {};
@@ -77,7 +82,7 @@ const PaymentSuccess = () => {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">Total Amount</span>
-                    <span className="font-bold text-xl text-green-600">${total}</span>
+                    <span className="font-bold text-xl text-green-600">₹{toINR(total)}</span>
                   </div>
                   <div className="border-t pt-4">
                     <div className="flex justify-between items-center">

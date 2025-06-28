@@ -2,9 +2,14 @@ import React from 'react';
 import { PayPalButtons } from "@paypal/react-paypal-js";
 import { initiatePayment } from '../services/razorpay';
 import { ReactComponent as RazorpayLogo } from '../assets/images/razorpay.svg';
+import paypalLogo from '../assets/images/paypal.png';
 
 const PaymentModal = ({ isOpen, onClose, amount, onSuccess, onError }) => {
   if (!isOpen) return null;
+
+  const conversionRate = 83; // Assuming a default conversion rate
+  const amountInINR = amount;
+  const amountInUSD = (amountInINR / conversionRate).toFixed(2);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
@@ -26,7 +31,7 @@ const PaymentModal = ({ isOpen, onClose, amount, onSuccess, onError }) => {
                 <RazorpayLogo className="w-24 h-8" />
                 <p className="text-sm text-gray-500">UPI, Cards, Netbanking</p>
               </div>
-              <span className="text-blue-600 font-medium">${amount}</span>
+              <span className="text-blue-600 font-medium">₹{amount}</span>
             </button>
           </div>
 
@@ -34,7 +39,7 @@ const PaymentModal = ({ isOpen, onClose, amount, onSuccess, onError }) => {
           <div className="border-2 rounded-lg p-4">
             <div className="flex items-center gap-4 mb-3">
               <img 
-                src="/assets/images/paypal-icon.png" 
+                src={paypalLogo} 
                 alt="PayPal" 
                 className="h-8 w-auto object-contain"
               />
@@ -46,7 +51,7 @@ const PaymentModal = ({ isOpen, onClose, amount, onSuccess, onError }) => {
                   purchase_units: [{
                     amount: {
                       currency_code: "USD",
-                      value: amount.toString()
+                      value: amountInUSD
                     }
                   }]
                 });

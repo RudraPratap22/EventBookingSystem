@@ -1,8 +1,119 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { BookingsContext } from '../context/BookingsContext';
+import { useNavigate } from 'react-router-dom';
+import UnsplashImagePicker from '../components/UnsplashImagePicker';
+import axios from 'axios';
+
+function AnalyticsModal({ isOpen, onClose, stats }) {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+      <div className="bg-white rounded-lg shadow-lg p-8 max-w-lg w-full relative">
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-red-600 hover:text-red-800 text-2xl"
+        >
+          &times;
+        </button>
+        <h2 className="text-2xl font-bold mb-4">Analytics</h2>
+        <div className="space-y-4">
+          {stats.map((stat, idx) => (
+            <div key={idx} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <span className="font-semibold text-gray-700">{stat.title}</span>
+              <span className="text-xl font-bold text-gray-900">{stat.value}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AddEventModal({ isOpen, onClose, onEventAdded }) {
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    date: '',
+    price: '',
+    location: '',
+    category: '',
+    image_url: '',
+    total_tickets: '',
+  });
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+  const handleImageSelect = (imageUrl) => {
+    setFormData({ ...formData, image_url: imageUrl });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      await axios.post('http://localhost:5000/api/events', formData);
+      setFormData({
+        title: '', description: '', date: '', price: '', location: '', category: '', image_url: '', total_tickets: '',
+      });
+      onEventAdded && onEventAdded();
+      onClose();
+    } catch (error) {
+      alert('Failed to add event.');
+      console.error(error);
+    }
+    setSubmitting(false);
+  };
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+      <div className="bg-white rounded-lg shadow-lg p-8 max-w-2xl w-full relative max-h-[90vh] overflow-y-auto">
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-red-600 hover:text-red-800 text-2xl"
+        >
+          &times;
+        </button>
+        <h2 className="text-2xl font-bold mb-4">Add New Event</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {['title', 'description', 'date', 'price', 'location', 'category', 'total_tickets'].map((field) => (
+              <div key={field}>
+                <label className="block text-gray-700 mb-2">
+                  {field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ')}
+                </label>
+                <input
+                  type={field === 'date' ? 'date' : 'text'}
+                  name={field}
+                  value={formData[field]}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            ))}
+          </div>
+          <div className="mt-6">
+            <label className="block text-gray-700 mb-2">Event Image</label>
+            <UnsplashImagePicker onSelect={handleImageSelect} currentImageUrl={formData.image_url} />
+          </div>
+          <button
+            type="submit"
+            disabled={submitting}
+            className="mt-4 w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            {submitting ? 'Adding...' : 'Add Event'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
 
 const AdminDashboard = () => {
   const { adminBookings, userBookings } = useContext(BookingsContext);
+  const navigate = useNavigate();
+  const [showAddEventModal, setShowAddEventModal] = useState(false);
+  const [showAnalyticsModal, setShowAnalyticsModal] = useState(false);
   
   const totalEvents = 24; // This could come from your events data
   const totalBookings = userBookings.length;
@@ -49,7 +160,7 @@ const AdminDashboard = () => {
     },
     {
       title: 'Revenue',
-      value: `$${totalRevenue.toFixed(2)}`,
+      value: `₹${totalRevenue.toFixed(2)}`,
       change: '+25%',
       changeType: 'positive',
       icon: (
@@ -111,7 +222,7 @@ const AdminDashboard = () => {
                       <p className="text-sm text-gray-600">{booking.customer}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold text-gray-900">${booking.total || '0.00'}</p>
+                      <p className="font-semibold text-gray-900">₹{booking.total || '0.00'}</p>
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         booking.status === 'approved' 
                           ? 'bg-green-100 text-green-700' 
@@ -137,7 +248,10 @@ const AdminDashboard = () => {
             <h2 className="text-xl font-bold text-gray-900">Quick Actions</h2>
           </div>
           <div className="p-6 space-y-4">
-            <button className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl hover:from-blue-100 hover:to-blue-200 transition-all group">
+            <button
+              className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-xl hover:from-blue-100 hover:to-blue-200 transition-all group"
+              onClick={() => setShowAddEventModal(true)}
+            >
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-blue-600 rounded-lg text-white group-hover:bg-blue-700 transition-colors">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -151,7 +265,10 @@ const AdminDashboard = () => {
               </svg>
             </button>
 
-            <button className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl hover:from-green-100 hover:to-green-200 transition-all group">
+            <button
+              className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-xl hover:from-green-100 hover:to-green-200 transition-all group"
+              onClick={() => navigate('/admin/bookings?tab=pending')}
+            >
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-green-600 rounded-lg text-white group-hover:bg-green-700 transition-colors">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,7 +282,10 @@ const AdminDashboard = () => {
               </svg>
             </button>
 
-            <button className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl hover:from-purple-100 hover:to-purple-200 transition-all group">
+            <button
+              className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-purple-100 rounded-xl hover:from-purple-100 hover:to-purple-200 transition-all group"
+              onClick={() => setShowAnalyticsModal(true)}
+            >
               <div className="flex items-center space-x-3">
                 <div className="p-2 bg-purple-600 rounded-lg text-white group-hover:bg-purple-700 transition-colors">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -181,6 +301,8 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
+      <AddEventModal isOpen={showAddEventModal} onClose={() => setShowAddEventModal(false)} onEventAdded={null} />
+      <AnalyticsModal isOpen={showAnalyticsModal} onClose={() => setShowAnalyticsModal(false)} stats={stats} />
     </div>
   );
 };
